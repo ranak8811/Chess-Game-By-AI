@@ -8,6 +8,10 @@
   </head>
   <body>
     <div id="game-container">
+      <h1 id="game-title">Chess Game</h1>
+      <p id="game-status">
+        Status: <span id="status-message">Game in progress...</span>
+      </p>
       <div id="board-container">
         <!-- Chessboard will be generated here by JavaScript -->
       </div>
@@ -21,7 +25,6 @@
           </select>
         </div>
         <p>Turn: <span id="turn-indicator">White</span></p>
-        <p>Status: <span id="status-message">Game in progress...</span></p>
         <div id="game-controls">
           <button id="reset-button">New Game</button>
           <button id="undo-button">Undo Move</button>
