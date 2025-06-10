@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="board-container">
+            <!-- Chessboard will be generated here by JavaScript -->
+        </div>
+        <div id="game-info">
+            <h2>Game Information</h2>
+            <div id="game-mode-selector">
+                <label for="mode">Mode:</label>
+                <select id="mode">
+                    <option value="pvp" selected>Player vs Player</option>
+                    <option value="pva">Player vs AI (Easy)</option>
+                </select>
+            </div>
+            <p>Turn: <span id="turn-indicator">White</span></p>
+            <p>Status: <span id="status-message">Game in progress...</span></p>
+            <div id="game-controls">
+                <button id="reset-button">New Game</button>
+                <button id="undo-button">Undo Move</button>
+                <button id="resign-button">Resign</button>
+                <button id="offer-draw-button">Offer Draw</button>
+                <span id="draw-offer-status"></span>
+            </div>
+        </div>
+        <div id="move-history-container">
+            <div class="history-panel">
+                <h3>White's Moves</h3>
+                <ul id="white-moves-list"></ul>
+            </div>
+            <div class="history-panel">
+                <h3>Black's Moves</h3>
+                <ul id="black-moves-list"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

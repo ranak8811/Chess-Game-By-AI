@@ -1,0 +1,254 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+#game-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+#board-container {
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
+    width: 480px; /* 8 * 60px */
+    height: 480px; /* 8 * 60px */
+    border: 2px solid #333;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px; /* Size of piece characters */
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+
+.square.light {
+    background-color: #f0d9b5; /* Light wood color */
+}
+
+.square.dark {
+    background-color: #b58863; /* Dark wood color */
+}
+
+.square.selected {
+    background-color: #6495ED !important; /* Cornflower blue for selected square */
+    outline: 2px solid #0000CD; /* Medium blue outline */
+}
+
+.square.valid-move {
+    background-color: rgba(144, 238, 144, 0.7) !important; /* Light green with transparency */
+    border-radius: 50%;
+}
+
+.piece {
+    /* Styles for pieces if using text characters or SVGs */
+    /* Example for text pieces */
+    color: #000; /* Default black pieces */
+}
+
+.piece.white {
+    color: #ffffff; /* White pieces */
+    text-shadow:
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000; /* Black outline for white pieces */
+}
+
+.piece.black {
+    color: #000000; /* Black pieces */
+}
+
+
+#game-info {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 200px;
+}
+
+#game-info h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+#game-info p {
+    margin: 10px 0;
+    color: #555;
+}
+
+#game-mode-selector {
+    margin-bottom: 15px;
+}
+
+#game-mode-selector label {
+    margin-right: 5px;
+}
+
+#game-mode-selector select {
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+#game-controls button {
+    padding: 8px 12px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin: 5px 2px;
+}
+
+#game-controls button#reset-button {
+    background-color: #4CAF50; /* Green */
+}
+#game-controls button#reset-button:hover {
+    background-color: #45a049;
+}
+
+#game-controls button#undo-button {
+    background-color: #ffc107; /* Amber */
+    color: #333;
+}
+#game-controls button#undo-button:hover {
+    background-color: #e0a800;
+}
+
+#game-controls button#resign-button {
+    background-color: #f44336; /* Red */
+}
+#game-controls button#resign-button:hover {
+    background-color: #d32f2f;
+}
+
+#game-controls button#offer-draw-button {
+    background-color: #2196F3; /* Blue */
+}
+#game-controls button#offer-draw-button:hover {
+    background-color: #1976D2;
+}
+
+#draw-offer-status {
+    display: inline-block;
+    margin-left: 10px;
+    font-style: italic;
+    color: #777;
+}
+
+#move-history-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px; /* Add some space if game-container is column */
+}
+
+.history-panel {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    width: 180px; /* Adjust as needed */
+    max-height: 400px; /* Limit height and make scrollable */
+    overflow-y: auto;
+}
+
+.history-panel h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.history-panel ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+.history-panel ul li {
+    padding: 3px 0;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.history-panel ul li:last-child {
+    border-bottom: none;
+}
+
+
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    #game-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #board-container {
+        grid-template-columns: repeat(8, 50px);
+        grid-template-rows: repeat(8, 50px);
+        width: 400px;
+        height: 400px;
+    }
+
+    .square {
+        width: 50px;
+        height: 50px;
+        font-size: 30px;
+    }
+
+    #game-info {
+        width: 90%;
+        max-width: 400px;
+        /* margin-top: 20px; Removed to let flexbox handle spacing */
+    }
+
+    #move-history-container {
+        width: 90%;
+        max-width: 400px;
+        flex-direction: column; /* Stack history panels on smaller screens */
+    }
+
+    .history-panel {
+        width: 100%; /* Full width for stacked panels */
+        margin-bottom: 10px;
+    }
+
+    .history-panel:last-child {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    #board-container {
+        grid-template-columns: repeat(8, 40px);
+        grid-template-rows: repeat(8, 40px);
+        width: 320px;
+        height: 320px;
+    }
+
+    .square {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+    }
+}
