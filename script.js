@@ -138,6 +138,13 @@ document.addEventListener("DOMContentLoaded", () => {
       square.classList.add((rank + file) % 2 === 0 ? "light" : "dark");
       square.dataset.index = i;
 
+      // Add algebraic notation to the square
+      const algebraicNotation = squareToAlgebraic(i);
+      const notationElement = document.createElement("span");
+      notationElement.classList.add("square-notation");
+      notationElement.textContent = algebraicNotation;
+      square.appendChild(notationElement);
+
       const pieceSymbol = boardState[i];
       if (pieceSymbol && PIECES[pieceSymbol]) {
         const pieceElement = document.createElement("span");
@@ -200,28 +207,41 @@ document.addEventListener("DOMContentLoaded", () => {
       // A piece is already selected
       if (validMoves.includes(index)) {
         // Clicked on a valid move square
-        movePiece(selectedSquareIndex, index);
+        const from = selectedSquareIndex;
+        const to = index;
+        const pieceToMove = boardState[from];
+        const capturedPiece = boardState[to];
+
+        // Simulate the move to check for check/checkmate for the *next* player
+        const simulatedBoard = [...boardState];
+        simulatedBoard[to] = pieceToMove;
+        simulatedBoard[from] = null;
+
+        const nextPlayer = currentPlayer === "white" ? "black" : "white";
+        const { check, checkmate } = checkPostMoveStatus(
+          simulatedBoard,
+          nextPlayer,
+          currentPlayer
+        );
+
+        movePiece(from, to, check, checkmate); // Pass check/checkmate status to recordMove
+
         selectedSquareIndex = -1;
         validMoves = [];
         switchPlayer();
-        const opponentColor = currentPlayer; // The player who just moved is now the opponent
-        const currentKingColor = currentPlayer; // The player whose turn it is now
 
-        if (isKingInCheck(boardState, currentKingColor)) {
-          if (isCheckmate(boardState, currentKingColor)) {
-            gameOver = true;
-            statusMessage.textContent = `Checkmate! ${
-              opponentColor.charAt(0).toUpperCase() + opponentColor.slice(1)
-            } wins!`;
-            disableControlsOnGameOver();
-            return;
-          } else {
-            statusMessage.textContent = `Check! ${
-              currentKingColor.charAt(0).toUpperCase() +
-              currentKingColor.slice(1)
-            } to move.`;
-          }
-        } else if (isStalemate(boardState, currentKingColor)) {
+        if (checkmate) {
+          gameOver = true;
+          statusMessage.textContent = `Checkmate! ${
+            currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)
+          } wins!`;
+          disableControlsOnGameOver();
+          return;
+        } else if (check) {
+          statusMessage.textContent = `Check! ${
+            currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)
+          } to move.`;
+        } else if (isStalemate(boardState, currentPlayer)) {
           gameOver = true;
           statusMessage.textContent = `Stalemate! The game is a draw.`;
           disableControlsOnGameOver();
@@ -231,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)
           } to move.`;
         }
+
         if (drawOfferedBy && drawOfferedBy !== currentPlayer) {
           drawOfferStatus.textContent = `${
             drawOfferedBy.charAt(0).toUpperCase() + drawOfferedBy.slice(1)
@@ -288,17 +309,48 @@ document.addEventListener("DOMContentLoaded", () => {
     return file + rank;
   }
 
-  function recordMove(fromIndex, toIndex, pieceSymbol, capturedPieceSymbol) {
-    const pieceName = PIECES[pieceSymbol].type.charAt(0);
+  function recordMove(
+    fromIndex,
+    toIndex,
+    pieceSymbol,
+    capturedPieceSymbol,
+    isCheck = false,
+    isCheckmate = false,
+    isCastling = false,
+    promotionPiece = null
+  ) {
+    const pieceType = PIECES[pieceSymbol].type;
     const fromAlg = squareToAlgebraic(fromIndex);
     const toAlg = squareToAlgebraic(toIndex);
-    let notation = pieceName !== "P" ? pieceName : ""; // Pawn notation doesn't usually include 'P'
-    notation += fromAlg;
-    notation += capturedPieceSymbol ? "x" : "-"; // 'x' for capture, '-' for move
-    notation += toAlg;
-    // TODO: Add check (+) or checkmate (#) if applicable
-    // TODO: Add castling notation (O-O, O-O-O)
-    // TODO: Add pawn promotion notation (e.g., e8=Q)
+    let notation = "";
+
+    if (isCastling === "kingside") {
+      notation = "O-O";
+    } else if (isCastling === "queenside") {
+      notation = "O-O-O";
+    } else {
+      // Standard move notation
+      if (pieceType !== "Pawn") {
+        notation += pieceSymbol.toUpperCase(); // Use uppercase for piece type (e.g., N for Knight)
+      }
+      if (capturedPieceSymbol) {
+        if (pieceType === "Pawn") {
+          notation += fromAlg.charAt(0); // Pawn captures include file of origin
+        }
+        notation += "x";
+      }
+      notation += toAlg;
+
+      if (promotionPiece) {
+        notation += "=" + promotionPiece.toUpperCase();
+      }
+    }
+
+    if (isCheckmate) {
+      notation += "#";
+    } else if (isCheck) {
+      notation += "+";
+    }
 
     const boardStateBeforeMove = [...boardState]; // Shallow copy for undo
 
@@ -323,13 +375,33 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < moveHistory.length; i++) {
       const move = moveHistory[i];
       const listItem = document.createElement("li");
+      const pieceType = PIECES[move.piece].type;
+      const fromAlg = squareToAlgebraic(move.from);
+      const toAlg = squareToAlgebraic(move.to);
+      let fullMoveText = `${pieceType} ${move.notation} (${fromAlg} to ${toAlg})`;
+
+      if (move.capturedPiece) {
+        const capturedPieceType = PIECES[move.capturedPiece].type;
+        const capturingPlayerColor = move.player;
+        const capturedPlayerColor =
+          capturingPlayerColor === "white" ? "black" : "white";
+        fullMoveText += ` - ${
+          capturingPlayerColor.charAt(0).toUpperCase() +
+          capturingPlayerColor.slice(1)
+        }'s ${pieceType} captured ${
+          capturedPlayerColor.charAt(0).toUpperCase() +
+          capturedPlayerColor.slice(1)
+        }'s ${capturedPieceType}`;
+        listItem.classList.add("capture-move"); // Add class for styling
+      }
+
       if (move.player === "white") {
         whiteMoveCount++;
-        listItem.textContent = `${whiteMoveCount}. ${move.notation}`;
+        listItem.textContent = `${whiteMoveCount}. ${fullMoveText}`;
         whiteMovesList.appendChild(listItem);
       } else {
         blackMoveCount++;
-        listItem.textContent = `${blackMoveCount}. ${move.notation}`;
+        listItem.textContent = `${blackMoveCount}. ${fullMoveText}`;
         blackMovesList.appendChild(listItem);
       }
     }
@@ -338,15 +410,74 @@ document.addEventListener("DOMContentLoaded", () => {
     blackMovesList.scrollTop = blackMovesList.scrollHeight;
   }
 
-  function movePiece(fromIndex, toIndex) {
+  function movePiece(
+    fromIndex,
+    toIndex,
+    isCheck = false,
+    isCheckmate = false,
+    isCastling = false,
+    promotionPiece = null
+  ) {
     const pieceToMove = boardState[fromIndex];
     const capturedPiece = boardState[toIndex]; // Could be null
 
-    recordMove(fromIndex, toIndex, pieceToMove, capturedPiece);
+    // Handle Castling
+    if (
+      PIECES[pieceToMove].type === "King" &&
+      Math.abs(fromIndex - toIndex) === 2
+    ) {
+      isCastling = toIndex > fromIndex ? "kingside" : "queenside";
+      // Move rook as well
+      if (isCastling === "kingside") {
+        boardState[toIndex - 1] = boardState[fromIndex + 3]; // Move rook to f1/f8
+        boardState[fromIndex + 3] = null; // Clear old rook position
+      } else {
+        // queenside
+        boardState[toIndex + 1] = boardState[fromIndex - 4]; // Move rook to d1/d8
+        boardState[fromIndex - 4] = null; // Clear old rook position
+      }
+    }
 
-    // TODO: Handle pawn promotion, castling, en passant
-    boardState[toIndex] = pieceToMove;
+    // Handle Pawn Promotion
+    if (
+      PIECES[pieceToMove].type === "Pawn" &&
+      (Math.floor(toIndex / 8) === 0 || Math.floor(toIndex / 8) === 7)
+    ) {
+      // For simplicity, always promote to Queen for now
+      promotionPiece = currentPlayer === "white" ? "Q" : "q";
+      boardState[toIndex] = promotionPiece;
+    } else {
+      boardState[toIndex] = pieceToMove;
+    }
     boardState[fromIndex] = null;
+
+    recordMove(
+      fromIndex,
+      toIndex,
+      pieceToMove,
+      capturedPiece,
+      isCheck,
+      isCheckmate,
+      isCastling,
+      promotionPiece
+    );
+  }
+
+  // Helper function to determine if a move results in check or checkmate
+  function checkPostMoveStatus(board, kingColor, opponentColor) {
+    const isCurrentKingInCheck = isKingInCheck(board, kingColor);
+    const isOpponentKingInCheck = isKingInCheck(board, opponentColor);
+
+    let check = false;
+    let checkmate = false;
+
+    if (isOpponentKingInCheck) {
+      check = true;
+      if (isCheckmate(board, opponentColor)) {
+        checkmate = true;
+      }
+    }
+    return { check, checkmate };
   }
 
   function switchPlayer() {
@@ -1101,14 +1232,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (bestMove) {
-      movePiece(bestMove.from, bestMove.to);
+      // Simulate the AI's move to check for check/checkmate for the *next* player (white)
+      const simulatedBoardAfterAIMove = [...boardState];
+      simulatedBoardAfterAIMove[bestMove.to] = bestMove.piece;
+      simulatedBoardAfterAIMove[bestMove.from] = null;
+
+      const { check, checkmate } = checkPostMoveStatus(
+        simulatedBoardAfterAIMove,
+        "white",
+        "black"
+      );
+
+      movePiece(bestMove.from, bestMove.to, check, checkmate); // Pass check/checkmate status
+
       switchPlayer();
       statusMessage.textContent = `AI moved ${
         PIECES[bestMove.piece].type
       } from ${squareToAlgebraic(bestMove.from)} to ${squareToAlgebraic(
         bestMove.to
       )}. White to move.`;
-      // TODO: Check for check/checkmate by AI
+
+      if (checkmate) {
+        gameOver = true;
+        statusMessage.textContent = `Checkmate! Black wins!`;
+        disableControlsOnGameOver();
+        return;
+      } else if (check) {
+        statusMessage.textContent = `Check! White to move.`;
+      }
     } else {
       // This case means AI has no valid moves (stalemate or checkmate for AI)
       // This should be handled by a proper game over check
