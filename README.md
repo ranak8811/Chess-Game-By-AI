@@ -2,6 +2,10 @@
 
 This is a simple, interactive Chess game implemented using HTML, CSS, and JavaScript. It provides a basic platform to play chess in a web browser.
 
+## Live Demo
+
+Experience the game live in your browser: [Live Demo Link](https://ranak8811.github.io/Chess-Game-By-AI/)
+
 ## Features
 
 - **Interactive Board:** A visually appealing chess board with draggable pieces.
@@ -38,10 +42,6 @@ The AI opponent in this chess game is designed to provide a challenging yet acce
 - **Simplified Minimax Algorithm:** To anticipate immediate player responses, the AI incorporates a simplified version of the Minimax algorithm. While not a full-depth search (due to the computational constraints of a browser-based environment), this allows the AI to look a few moves ahead, enhancing its strategic foresight.
 
 **Note on Advanced Logic:** The current AI implementation provides a solid foundation for engaging gameplay. However, the development of more advanced game logic, including deeper search capabilities, refined evaluation functions, and complex tactical considerations, is an ongoing effort and represents a key area for future contributions. This project is intended to be open-source, encouraging community involvement in enhancing these advanced features.
-
-## Live Demo
-
-Experience the game live in your browser: [Live Demo Link] (https://ranak8811.github.io/Chess-Game-By-AI/)
 
 ## Contributing and Future Enhancements
 
