@@ -24,22 +24,36 @@ This is a simple, interactive Chess game implemented using HTML, CSS, and JavaSc
 5.  **Turns:** White moves first, then Black, and so on.
 6.  **Reset:** If you want to start a new game, refresh the page.
 
-## How AI Playing Works
+## Advanced Game Logic and AI
 
-The AI in this chess game operates based on a simplified decision-making process. It evaluates possible moves and selects one based on a set of predefined rules and heuristics. The AI's logic is implemented in `script.js` and primarily focuses on:
+The AI opponent in this chess game is designed to provide a challenging yet accessible experience. Its decision-making process is built upon a combination of fundamental chess principles and computational strategies, primarily implemented within `script.js`.
 
-- **Basic Move Generation:** The AI can identify all legal moves for its pieces.
-- **Simple Evaluation Function:** Each potential move is assigned a score based on factors like:
-  - **Material Advantage:** Prioritizing capturing opponent's pieces and protecting its own.
-  - **Positional Control:** Favoring moves that control central squares or attack key positions.
-  - **Threat Assessment:** Avoiding immediate threats to its own king or valuable pieces.
-- **Minimax (Simplified):** A rudimentary form of minimax algorithm might be used to look a few moves ahead, though not a full-depth search due to computational complexity for a browser-based game. This helps the AI anticipate immediate responses from the player.
+### AI Mechanics:
 
-The AI's strength is limited by the depth of its search and the complexity of its evaluation function. It's designed to be a challenging but not unbeatable opponent for casual play.
+- **Move Generation:** The AI efficiently identifies all legal moves for its pieces, adhering to standard chess rules.
+- **Heuristic-Based Evaluation:** Each potential move is assessed using a comprehensive evaluation function. This function assigns a score based on various strategic factors, including:
+  - **Material Advantage:** Prioritizing the capture of opponent's pieces and the protection of its own valuable assets.
+  - **Positional Control:** Favoring moves that establish control over key squares, especially central ones, and those that exert influence over the board.
+  - **Threat Assessment:** Proactively identifying and mitigating immediate threats to its king and other critical pieces.
+- **Simplified Minimax Algorithm:** To anticipate immediate player responses, the AI incorporates a simplified version of the Minimax algorithm. While not a full-depth search (due to the computational constraints of a browser-based environment), this allows the AI to look a few moves ahead, enhancing its strategic foresight.
 
-## Live Page
+**Note on Advanced Logic:** The current AI implementation provides a solid foundation for engaging gameplay. However, the development of more advanced game logic, including deeper search capabilities, refined evaluation functions, and complex tactical considerations, is an ongoing effort and represents a key area for future contributions. This project is intended to be open-source, encouraging community involvement in enhancing these advanced features.
 
-[Live Page URL will be added here later]
+## Live Demo
+
+Experience the game live in your browser: [Live Demo Link] (https://ranak8811.github.io/Chess-Game-By-AI/)
+
+## Contributing and Future Enhancements
+
+This project is open-source and welcomes contributions from the community! The advanced game logic, including deeper AI capabilities and more complex tactical considerations, is currently under development. We invite developers to fork this repository, explore the existing codebase, and contribute to enhancing these features. Your insights and code can help make this chess game even more sophisticated and challenging.
+
+## Support the Project
+
+If you find this Chess Game enjoyable or useful, please consider giving it a star on GitHub! Your support helps motivate further development and improvements.
+
+## About the Development
+
+This Chess Game was developed with a unique approach, leveraging the power of Artificial Intelligence and what we like to call "vibe coding." The core structure and initial logic were generated through iterative prompting of AI models, allowing for rapid prototyping and exploration of different implementations. This method emphasizes intuitive development and creative problem-solving, resulting in a game built with a blend of AI assistance and human refinement.
 
 ## Technologies Used
 
